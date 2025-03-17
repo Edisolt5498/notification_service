@@ -7,7 +7,7 @@ import com.vonage.client.sms.SmsSubmissionResponse;
 import com.vonage.client.sms.SmsSubmissionResponseMessage;
 import com.vonage.client.sms.messages.TextMessage;
 import faang.school.notificationservice.config.VonageConfig;
-import faang.school.notificationservice.dto.UserDto;
+import faang.school.notificationservice.dto.UserNotificationDto;
 import faang.school.notificationservice.exception.SmsSendingException;
 import faang.school.notificationservice.service.SmsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,13 +39,13 @@ public class SmsServiceTest {
     @Mock
     private SmsSubmissionResponse response;
 
-    private UserDto userDto;
+    private UserNotificationDto userNotificationDto;
     private String message;
 
     @BeforeEach
     void setup() {
-        userDto = new UserDto();
-        userDto.setPhone("1234567890");
+        userNotificationDto = new UserNotificationDto();
+        userNotificationDto.setPhone("1234567890");
         message = "Hello!";
         when(config.getFrom()).thenReturn("faang");
         when(vonageClient.getSmsClient()).thenReturn(smsClient);
@@ -57,7 +57,7 @@ public class SmsServiceTest {
     void sendTest_Success() {
         when(successMessage.getStatus()).thenReturn(MessageStatus.OK);
 
-        assertDoesNotThrow(() -> smsService.send(userDto, message));
+        assertDoesNotThrow(() -> smsService.send(userNotificationDto, message));
         verify(smsClient).submitMessage(any(TextMessage.class));
     }
 
@@ -66,7 +66,7 @@ public class SmsServiceTest {
         when(successMessage.getStatus()).thenReturn(MessageStatus.INTERNAL_ERROR);
 
         SmsSendingException exception = assertThrows(SmsSendingException.class,
-                () -> smsService.send(userDto, message));
+                () -> smsService.send(userNotificationDto, message));
 
         assertEquals("Failed to send message to 1234567890", exception.getMessage());
         verify(smsClient).submitMessage(any(TextMessage.class));
