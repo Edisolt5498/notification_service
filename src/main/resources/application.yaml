@@ -6,7 +6,18 @@ spring:
       channel:
         follower: follower_channel
         achievement: achievement_channel
-
+    kafka:
+      bootstrap-servers: localhost:9092
+      consumer:
+        group-id: "user-service-group-ban"
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+        properties:
+          spring:
+            json:
+              trusted:
+                packages: '*'
   mail:
     host: smtp.gmail.com
     port: 587
@@ -21,7 +32,6 @@ spring:
           connectiontimeout: 5000
           timeout: 5000
           writetimeout: 5000
-
   messages:
     basename: messages
 
@@ -50,3 +60,6 @@ user-service:
 telegram:
   bot_username: "Corporation_XBot"
   botToken: "7686886258:AAGpaNweT6fE6PB7_p6uXIsF8L8ogGLFd5A"
+
+topic:
+  follower-topic: "follower_topic"
