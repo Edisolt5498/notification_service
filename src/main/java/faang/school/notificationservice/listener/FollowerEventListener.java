@@ -26,19 +26,26 @@ public class FollowerEventListener {
 
     @KafkaListener(topics = followerTopic, groupId = kafkaConsumerGroupId, properties = {"spring.json.value.default.type=faang.school.notificationservice.event"})
     public void consume(String message) throws IOException {
-        System.out.println("Received message: " + message);
-        // Ваша логика обработки сообщения
 
-        FollowerEvent event = objectMapper.readValue(message, FollowerEvent.class);
+        try {
+            System.out.println("Received message: " + message);
+            // Ваша логика обработки сообщения
 
-        System.out.println("Received event: " + event);
-        // Ваша логика обработки сообщения
+            FollowerEvent event = objectMapper.readValue(message, FollowerEvent.class);
 
-        UserNotificationDto user = userServiceClient.getUserNotificationDto(event.getFolloweeId());
+            System.out.println("Received event: " + event);
+            // Ваша логика обработки сообщения
 
-        notificationServices.stream()
-                .filter(service -> service.getPreferredContact() == UserNotificationDto.PreferredContact.EMAIL)
-                .findFirst()
-                .ifPresent(service -> service.send(user, "You've got a new follower!"));
+            UserNotificationDto user = userServiceClient.getUserNotificationDto(event.getFolloweeId());
+
+            notificationServices.stream()
+                    .filter(service -> service.getPreferredContact() == user.getPreference())
+                    .findFirst()
+                    .ifPresent(service -> service.send(user, "You've got a new follower!"));
+        } catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
     }
 }

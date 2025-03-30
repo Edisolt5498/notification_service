@@ -12,6 +12,6 @@ public class UserNotificationDto {
     private PreferredContact preference;
 
     public enum PreferredContact {
-        EMAIL, SMS, TELEGRAM
+        EMAIL, PHONE, TELEGRAM
     }
 }
