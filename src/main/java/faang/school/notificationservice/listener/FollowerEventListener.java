@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import faang.school.notificationservice.client.UserServiceClient;
 import faang.school.notificationservice.dto.UserNotificationDto;
 import faang.school.notificationservice.event.FollowerEvent;
+import faang.school.notificationservice.messaging.FollowerMessageBuilder;
 import faang.school.notificationservice.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 @Component
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class FollowerEventListener {
     private final UserServiceClient userServiceClient;
     private final ObjectMapper objectMapper;
     private final List<NotificationService> notificationServices;
+    private final FollowerMessageBuilder followerMessageBuilder;
 
     @KafkaListener(topics = followerTopic, groupId = kafkaConsumerGroupId, properties = {"spring.json.value.default.type=faang.school.notificationservice.event"})
     public void consume(String message) throws IOException {
@@ -38,10 +41,12 @@ public class FollowerEventListener {
 
             UserNotificationDto user = userServiceClient.getUserNotificationDto(event.getFolloweeId());
 
+            String text = followerMessageBuilder.buildMessage(event, Locale.getDefault());
+
             notificationServices.stream()
                     .filter(service -> service.getPreferredContact() == user.getPreference())
                     .findFirst()
-                    .ifPresent(service -> service.send(user, "You've got a new follower!"));
+                    .ifPresent(service -> service.send(user, text));
         } catch (Exception e)
         {
             throw new RuntimeException(e);
