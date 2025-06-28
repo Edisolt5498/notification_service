@@ -7,11 +7,18 @@ spring:
         follower: follower_channel
         achievement: achievement_channel
 
+  kafka:
+    consumer:
+      bootstrap-servers: localhost:9092,localhost:9094,localhost:9096
+      group-id: mentorship.request.created.v1
+      properties:
+        spring.json.trusted.packages: "*"
+
   mail:
     host: smtp.gmail.com
     port: 587
-    username: your_email@gmail.com #https://www.baeldung.com/spring-email
-    password: whatever #генерируем для своего Google аккаунта по инструкции https://support.google.com/accounts/answer/185833
+    username: uralostrov6@gmail.com
+    password: "bnrr kjhw kirg ylnw"
     properties:
       mail:
         smtp:
